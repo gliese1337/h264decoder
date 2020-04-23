@@ -12,15 +12,10 @@ type H264Exports = {
     pStorage: number, decBuffer: number, byteLength: number,
     pPicture: number, pWidth: number, pHeight: number,
   ): number;
-  h264Alloc(): number;
+  h264alloc(): number;
 };
 
 import { h264Module } from './h264.wasm';
-
-const WASM_PAGE_SIZE = 65536;
-const DYNAMIC_BASE = 5251792;
-const DYNAMICTOP_PTR = 8752;
-const INITIAL_INITIAL_MEMORY = 16777216;
 
 const memcpy = (Module: ModuleMemory) =>
   (dest: number, src: number, num: number) => {
@@ -50,43 +45,22 @@ const resize = (Module: ModuleMemory) => (requestedSize: number) => {
       const { buffer } = memory;
       Module.HEAP8 = new Int8Array(buffer);
       Module.HEAPU8 = new Uint8Array(buffer);
+      Module.HEAP32 = new Int32Array(buffer);
       return true;
     } catch (e) {}
   }
   return false;
 }
 
-function createH264Module(): { memory: ModuleMemory, asm: H264Exports } {
-  const wasmMemory = new WebAssembly.Memory({
-    "initial": INITIAL_INITIAL_MEMORY / WASM_PAGE_SIZE,
-    "maximum": 2147483648 / WASM_PAGE_SIZE
-  });
-
-  const memory: ModuleMemory = {
-    memory: wasmMemory,
-    HEAP8: new Int8Array(wasmMemory.buffer),
-    HEAPU8: new Uint8Array(wasmMemory.buffer),
-    HEAP32: new Int32Array(wasmMemory.buffer),
-  };
-  
-  memory.HEAP32[DYNAMICTOP_PTR >> 2] = DYNAMIC_BASE;
-
-  const { exports: asm } = new WebAssembly.Instance(h264Module, {
-    h264: {
-      memory: wasmMemory,
-      memcpy: memcpy(memory),
-      resize: resize(memory),
-    }
-  });
-
-  return { memory, asm: (asm as H264Exports) };
-}
+const WASM_PAGE_SIZE = 65536;
+const DYNAMIC_BASE = 5251792;
+const DYNAMICTOP_PTR = 8752;
+const INITIAL_INITIAL_MEMORY = 16777216;
 
 /**
  * This class wraps the details of the h264 WASM module.
- *
- * Each call to decode() will decode a single encoded element.
- * When decode() returns PIC_RDY, a picture is ready in the output buffer.
+ * Each call to decode(nalu) will decode a single encoded element.
+ * When decode(nalu) returns PIC_RDY, a picture is ready in the output buffer.
  */
 
 export class H264Decoder {
@@ -94,7 +68,7 @@ export class H264Decoder {
   private pWidth: number;
   private pHeight: number;
   private pPicture: number;
-  private _decBuffer: number;
+  private decBuffer: number;
   private memory: ModuleMemory;
   private asm: H264Exports;
 
@@ -102,39 +76,60 @@ export class H264Decoder {
   public height = 0;
   public pic = new Uint8Array(0);
 
-  static PIC_RDY: number;
-  static RDY: number;
-  static HDRS_RDY: number;
-  static ERROR: number;
-  static PARAM_SET_ERROR: number;
-  static MEMALLOC_ERROR: number;
+  static RDY = 0;
+  static PIC_RDY = 1;
+  static HDRS_RDY = 2;
+  static ERROR = 3;
+  static PARAM_SET_ERROR = 4;
+  static MEMALLOC_ERROR = 5;
 
   constructor () {
-    const { memory, asm } = createH264Module();
+    const wasmMemory = new WebAssembly.Memory({
+      "initial": INITIAL_INITIAL_MEMORY / WASM_PAGE_SIZE,
+      "maximum": 2147483648 / WASM_PAGE_SIZE
+    });
+  
+    const memory: ModuleMemory = {
+      memory: wasmMemory,
+      HEAP8: new Int8Array(wasmMemory.buffer),
+      HEAPU8: new Uint8Array(wasmMemory.buffer),
+      HEAP32: new Int32Array(wasmMemory.buffer),
+    };
+    
+    memory.HEAP32[DYNAMICTOP_PTR >> 2] = DYNAMIC_BASE;
+  
+    const { exports: asm } = new WebAssembly.Instance(h264Module, {
+      h264: {
+        memory: wasmMemory,
+        memcpy: memcpy(memory),
+        resize: resize(memory),
+      }
+    }) as { exports: H264Exports };
+
     this.memory = memory;
     this.asm = asm;
-    this.pStorage = asm.h264Alloc();
+    this.pStorage = asm.h264alloc();
     this.pWidth = asm.malloc(4);
     this.pHeight = asm.malloc(4);
     this.pPicture = asm.malloc(4);
 
-    this._decBuffer = asm.malloc(1024 * 1024);
+    this.decBuffer = asm.malloc(1024 * 1024);
 
     asm.init(this.pStorage, 0);
   }
 
-  decode (nal: Uint8Array) {
+  decode (nalu: Uint8Array) {
     const { memory, asm } = this;
-    memory.HEAPU8.set(nal, this._decBuffer);
+    memory.HEAPU8.set(nalu, this.decBuffer);
 
     const retCode = asm.decode(
-      this.pStorage, this._decBuffer, nal.byteLength,
+      this.pStorage, this.decBuffer, nalu.byteLength,
       this.pPicture, this.pWidth, this.pHeight,
     );
 
     if (retCode === H264Decoder.PIC_RDY) {
-      const width = this.width = memory.HEAP32[this.pWidth >> 2];
-      const height = this.height = memory.HEAP32[this.pHeight >> 2];
+      const width = this.width = memory.HEAP32[this.pWidth >>> 2];
+      const height = this.height = memory.HEAP32[this.pHeight >>> 2];
       const picPtr = memory.HEAP32[this.pPicture >> 2];
       const datalen = (width * height) * 3 / 2;
       this.pic = memory.HEAPU8.subarray(picPtr, picPtr + datalen);

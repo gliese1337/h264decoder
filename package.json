@@ -1,23 +1,38 @@
 {
-  "name": "tinyh264",
+  "name": "h264decoder",
   "version": "1.0.0",
-  "description": "This project was forked from [h264bsd](https://github.com/oneam/h264bsd).",
-  "main": "index.js",
+  "description": "Just an H.264 video decoder.",
+  "main": "dist/index.js",
+  "files": [
+    "dist/index.js",
+    "dist/index.d.ts",
+    "dist/b64.js",
+    "dist/b64.d.ts",
+    "dist/h264.wasm.js",
+    "dist/h264.wasm.d.ts"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "prepare": "tsc"
   },
+  "author": "Logan R. Kearsley",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {},
+  "keywords": [
+    "h264",
+    "video",
+    "wasm",
+    "webassembly"
+  ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/udevbe/tinyh264.git"
+    "url": "git+https://github.com/gliese1337/h264decoder.git"
   },
-  "author": "",
-  "license": "ISC",
   "bugs": {
-    "url": "https://github.com/udevbe/tinyh264/issues"
+    "url": "https://github.com/gliese1337/h264decoder/issues"
   },
-  "homepage": "https://github.com/udevbe/tinyh264#readme",
-  "dependencies": {
-    "@types/node": "^13.13.2",
-    "typescript": "^3.8.3"
-  }
+  "homepage": "https://github.com/gliese1337/h264decoder#readme"
 }
