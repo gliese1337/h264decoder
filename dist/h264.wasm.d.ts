@@ -1,1 +1,1 @@
-export declare const wasmBinary: Uint8Array;
+export declare const h264Module: WebAssembly.Module;

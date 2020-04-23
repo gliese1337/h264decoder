@@ -335,7 +335,7 @@
             (local.get $p1))))
       (else
         (i32.const -1))))
-  (func $f (export "free") (type $t4) (param $p0 i32)
+  (func $f (type $t4) (param $p0 i32)
     (local $l1 i32) (local $l2 i32) (local $l3 i32) (local $l4 i32) (local $l5 i32) (local $l6 i32) (local $l7 i32)
     (block $B0
       (br_if $B0
@@ -43547,146 +43547,9 @@
                     (i32.const 12)))))
             (i32.const 3)))))
     (local.get $l4))
-  (func $j (export "h264free") (type $t4) (param $p0 i32)
-    (call $f
-      (local.get $p0)))
   (func $i (export "h264alloc") (type $t16) (result i32)
     (call $e
       (i32.const 3396)))
-  (func $h (export "shutdown") (type $t4) (param $p0 i32)
-    (local $l1 i32) (local $l2 i32) (local $l3 i32)
-    (loop $L0
-      (if $I1
-        (local.tee $l3
-          (i32.load
-            (i32.add
-              (local.tee $l1
-                (i32.add
-                  (local.get $p0)
-                  (i32.shl
-                    (local.get $l2)
-                    (i32.const 2))))
-              (i32.const 20))))
-        (then
-          (call $f
-            (i32.load offset=40
-              (local.get $l3)))
-          (i32.store offset=40
-            (i32.load offset=20
-              (local.get $l1))
-            (i32.const 0))
-          (call $f
-            (i32.load offset=84
-              (i32.load offset=20
-                (local.get $l1))))
-          (i32.store offset=84
-            (i32.load offset=20
-              (local.get $l1))
-            (i32.const 0))
-          (call $f
-            (i32.load offset=20
-              (local.get $l1)))
-          (i32.store offset=20
-            (local.get $l1)
-            (i32.const 0))))
-      (br_if $L0
-        (i32.ne
-          (local.tee $l2
-            (i32.add
-              (local.get $l2)
-              (i32.const 1)))
-          (i32.const 32))))
-    (local.set $l2
-      (i32.const 0))
-    (loop $L2
-      (if $I3
-        (local.tee $l3
-          (i32.load
-            (i32.add
-              (local.tee $l1
-                (i32.add
-                  (local.get $p0)
-                  (i32.shl
-                    (local.get $l2)
-                    (i32.const 2))))
-              (i32.const 148))))
-        (then
-          (call $f
-            (i32.load offset=20
-              (local.get $l3)))
-          (i32.store offset=20
-            (i32.load offset=148
-              (local.get $l1))
-            (i32.const 0))
-          (call $f
-            (i32.load offset=24
-              (i32.load offset=148
-                (local.get $l1))))
-          (i32.store offset=24
-            (i32.load offset=148
-              (local.get $l1))
-            (i32.const 0))
-          (call $f
-            (i32.load offset=28
-              (i32.load offset=148
-                (local.get $l1))))
-          (i32.store offset=28
-            (i32.load offset=148
-              (local.get $l1))
-            (i32.const 0))
-          (call $f
-            (i32.load offset=44
-              (i32.load offset=148
-                (local.get $l1))))
-          (i32.store offset=44
-            (i32.load offset=148
-              (local.get $l1))
-            (i32.const 0))
-          (call $f
-            (i32.load offset=148
-              (local.get $l1)))
-          (i32.store offset=148
-            (local.get $l1)
-            (i32.const 0))))
-      (br_if $L2
-        (i32.ne
-          (local.tee $l2
-            (i32.add
-              (local.get $l2)
-              (i32.const 1)))
-          (i32.const 256))))
-    (call $f
-      (i32.load offset=3376
-        (local.get $p0)))
-    (i32.store offset=3376
-      (local.get $p0)
-      (i32.const 0))
-    (call $f
-      (i32.load offset=1212
-        (local.get $p0)))
-    (i32.store offset=1212
-      (local.get $p0)
-      (i32.const 0))
-    (call $f
-      (i32.load offset=1172
-        (local.get $p0)))
-    (i32.store offset=1172
-      (local.get $p0)
-      (i32.const 0))
-    (if $I4
-      (local.tee $l1
-        (i32.load offset=3388
-          (local.get $p0)))
-      (then
-        (call $f
-          (local.get $l1))
-        (i32.store offset=3388
-          (local.get $p0)
-          (i32.const 0))))
-    (call $f91
-      (i32.add
-        (local.get $p0)
-        (i32.const 1220))))
   (func $g (export "decode") (type $t8) (param $p0 i32) (param $p1 i32) (param $p2 i32) (param $p3 i32) (param $p4 i32) (param $p5 i32) (result i32)
     (local $l6 i32) (local $l7 i32)
     (global.set $g0
@@ -43782,7 +43645,7 @@
         (local.get $l6)
         (i32.const 16)))
     (local.get $l7))
-  (func $d (export "d") (type $t0) (param $p0 i32) (param $p1 i32) (result i32)
+  (func $d (export "init") (type $t0) (param $p0 i32) (param $p1 i32) (result i32)
     (local $l2 i32)
     (i32.store
       (i32.add
