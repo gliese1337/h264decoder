@@ -1,28 +1,23 @@
 {
   "name": "tinyh264",
-  "version": "0.0.5",
-  "description": "web assembly h264 decoder",
-  "main": "lib/index.js",
-  "module": "es/index.js",
-  "files": [
-    "es",
-    "lib"
-  ],
+  "version": "1.0.0",
+  "description": "This project was forked from [h264bsd](https://github.com/oneam/h264bsd).",
+  "main": "index.js",
   "scripts": {
-    "build-wasm": "bash build_wasm.sh",
-    "build": "npm run build-wasm && nwb build-web-module --copy-files",
-    "clean": "nwb clean-web-module",
-    "prepublishOnly": "npm run build",
-    "test": "nwb test",
-    "test:coverage": "nwb test --coverage",
-    "test:watch": "nwb test --server"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "dependencies": {},
-  "devDependencies": {
-    "nwb": "0.23.x"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/udevbe/tinyh264.git"
   },
-  "author": "Erik De Rijcke",
-  "homepage": "https://github.com/udevbe/tinyh264",
-  "license": "MIT",
-  "repository": "https://github.com/udevbe/tinyh264"
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/udevbe/tinyh264/issues"
+  },
+  "homepage": "https://github.com/udevbe/tinyh264#readme",
+  "dependencies": {
+    "@types/node": "^13.13.2",
+    "typescript": "^3.8.3"
+  }
 }
