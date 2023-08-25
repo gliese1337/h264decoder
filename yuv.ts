@@ -11,7 +11,7 @@ export function YUV2RBG(yuv: Uint8Array, width: number, height: number) {
   const uStart = width * height;
   const halfWidth = (width >>> 1);
   const vStart = uStart + (uStart >>> 2);
-  const rgb = new Uint8Array(uStart * 3);
+  const rgb = new Uint8ClampedArray(uStart * 3);
 
   let i = 0;
   for (let y = 0; y < height; y++) {
